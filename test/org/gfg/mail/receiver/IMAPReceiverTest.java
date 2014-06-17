@@ -20,8 +20,7 @@ import static org.junit.Assert.fail;
 
 /**
  * @author L <qiyuan4f@gmail.com>
- * @version 1.0
- * @date 2012-10
+ * @version 1.0 <2012-10-24 00:14>
  */
 public class IMAPReceiverTest {
 	private static Map<Account, String> cases = new HashMap<Account, String>();
@@ -54,19 +53,9 @@ public class IMAPReceiverTest {
 
 	}
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
+	/**
+	 * 测试
+	 */
 	@Test
 	public void testFetch() {
 		for (Entry<Account, String> item : cases.entrySet()) {
@@ -79,7 +68,9 @@ public class IMAPReceiverTest {
 			} catch (Exception e) {
 				fail(item.getValue());
 			} finally {
-				receiver.close();
+				if (receiver != null) {
+					receiver.close();
+				}
 			}
 		}
 	}

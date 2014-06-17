@@ -37,8 +37,8 @@ public class SMTPSenderTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		Account account = null;
-		ServerConfig server = null;
+		Account account;
+		ServerConfig server;
 
 		// 163 SSL
 		account = new Account();
@@ -117,7 +117,9 @@ public class SMTPSenderTest {
 			} catch (Exception e) {
 				fail("发送新邮件失败");
 			} finally {
-				sender.close();
+				if (sender != null) {
+					sender.close();
+				}
 			}
 		}
 	}
@@ -126,7 +128,7 @@ public class SMTPSenderTest {
 			String charset, String senderAddress, String senderName,
 			List<String> recipients, String sub, String msg, Collection<String> attachments)
 			throws SendFailedException {
-		MimeMessage message = null;
+		MimeMessage message;
 
 		try {
 			message = new MimeMessage(session);
@@ -140,8 +142,7 @@ public class SMTPSenderTest {
 			message.setSubject(sub, charset);
 			message.setFrom(new InternetAddress(senderAddress, senderName));
 
-			for (Iterator<String> it = recipients.iterator(); it.hasNext();) {
-				String email = (String) it.next();
+			for (String email : recipients) {
 				message.addRecipients(Message.RecipientType.TO, email);
 			}
 
@@ -164,15 +165,14 @@ public class SMTPSenderTest {
 			// attachment
 			if (attachments != null) {
 				MimeBodyPart attachPart;
-				for (Iterator<String> it = attachments.iterator(); it.hasNext();) {
+				for (String attachment : attachments) {
 					attachPart = new MimeBodyPart();
-					FileDataSource fds = new FileDataSource(it.next()
-							.toString().trim());
+					FileDataSource fds = new FileDataSource(attachment.trim());
 					attachPart.setDataHandler(new DataHandler(fds));
-					if (fds.getName().indexOf("$") != -1) {
+					if (fds.getName().contains("$")) {
 						attachPart.setFileName(fds.getName().substring(
-								fds.getName().indexOf("$") + 1,
-								fds.getName().length()));
+							fds.getName().indexOf("$") + 1,
+							fds.getName().length()));
 					} else {
 						attachPart.setFileName(fds.getName());
 					}
